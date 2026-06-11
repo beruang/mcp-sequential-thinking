@@ -1,0 +1,19 @@
+{
+  "type": "brainstorm_manifest",
+  "project": "mcp-sequential-thinking",
+  "status": "approved",
+  "created": "2026-06-12",
+  "human_root": "docs/mcp-sequential-thinking",
+  "agent_root": ".agent/contracts/mcp-sequential-thinking",
+  "contract": "docs/mcp-sequential-thinking/contract.md",
+  "phases": "docs/mcp-sequential-thinking/phases.md",
+  "spec_index": "docs/mcp-sequential-thinking/spec/spec-index.md",
+  "agent_files": {
+    "contract": ".agent/contracts/mcp-sequential-thinking/contract.ndjson",
+    "confidence": ".agent/contracts/mcp-sequential-thinking/confidence.ndjson",
+    "phases": ".agent/contracts/mcp-sequential-thinking/phases.ndjson",
+    "specs_index": ".agent/contracts/mcp-sequential-thinking/specs.index.ndjson",
+    "decisions": ".agent/contracts/mcp-sequential-thinking/decisions.ndjson",
+    "risks": ".agent/contracts/mcp-sequential-thinking/risks.ndjson"
+  }
+}

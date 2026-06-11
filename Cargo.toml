@@ -1,0 +1,28 @@
+[package]
+name = "mcp-sequential-thinking"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "mcp-sequential-thinking"
+path = "src/main.rs"
+
+[dependencies]
+rmcp = { version = "1.7.0", features = ["macros", "server", "transport-io"] }
+tokio = { version = "1.52.3", features = ["full"] }
+serde = { version = "1.0.210", features = ["derive"] }
+serde_json = "1.0.130"
+schemars = "1.2.1"
+thiserror = "2.0.3"
+anyhow = "1.0.90"
+clap = { version = "4.6.1", features = ["derive"] }
+tracing = "0.1.40"
+tracing-subscriber = "0.3.18"
+chrono = { version = "0.4.45", features = ["serde"] }
+uuid = { version = "1.10.0", features = ["v4", "serde"] }
+regex = "1.11.0"
+indexmap = "2.6.0"
+
+[dev-dependencies]
+insta = "1.42.0"
+tempfile = "3.13.0"
