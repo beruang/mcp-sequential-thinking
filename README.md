@@ -1,28 +1,65 @@
-# mcp-sequential-thinking
+# MCP Sequential Thinking
 
-A structured reasoning trace MCP server for AI agents. Records typed thinking steps with branching, revision tracking, dependency chains, evidence references, risk classification, and action proposals.
+> A structured reasoning trace MCP server for AI agents. Records typed thinking steps with branching, revision tracking, dependency chains, evidence references, risk classification, and action proposals.
 
-## Why structured thinking is useful
+[![CI](https://github.com/mcp-sequential-thinking/mcp-sequential-thinking/actions/workflows/ci.yml/badge.svg)](https://github.com/mcp-sequential-thinking/mcp-sequential-thinking/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Rust](https://img.shields.io/badge/rust-1.74%2B-orange.svg)](https://www.rust-lang.org)
+[![MCP](https://img.shields.io/badge/MCP-2025--06--18-blueviolet)](https://modelcontextprotocol.io)
 
-Free-form thought logs lose context. `mcp-sequential-thinking` provides typed thought kinds (observation, assumption, decision, revision, etc.), branching for alternatives, dependency tracking, budget enforcement, and exportable traces. AI agents performing complex multi-step tasks benefit from structured reasoning that is auditable, revisable, and machine-actionable.
+## Overview
 
-## Privacy warning
+`mcp-sequential-thinking` exposes a single MCP server that captures the *shape* of an agent's reasoning, not just the final answer. Every thought is typed (observation, assumption, decision, revision, risk, ...), traceable (branches, dependencies, revisions), and bounded (per-session budgets, TTL, content limits). Traces are exportable as JSON, JSONL, or Markdown for post-hoc review.
 
-This server stores structured reasoning traces. These traces may contain sensitive task, user, or project information. By default, traces are in-memory only, expire after 1 hour (TTL), and raw thought content is not logged. Secret redaction is enabled by default.
+Built for agents that need to be auditable, revisable, and machine-actionable.
+
+## Why structured thinking
+
+Free-form thought logs lose context. A typed trace lets a reviewer see:
+
+- which **observations** informed a **decision** (dependency chain),
+- which **assumptions** were **revised** and why (revision history),
+- which **branches** were explored and which were abandoned (branch provenance),
+- which **actions** were proposed and which carried risk (action proposals),
+- which **evidence** was consulted (URLs, quotes, tool results).
+
+## Features
+
+- **12 typed thought kinds** — observation, assumption, constraint, risk, option, decision, revision, validation, next_action, blocker, question, final_decision
+- **Branching** with full provenance (branch-from, branch-label, branch-status)
+- **Revision tracking** with configurable per-session limits
+- **Dependency chains** between thoughts
+- **Evidence references** — URL, quote, metadata, evidence type
+- **Risk classification** — level, category, requires-confirmation
+- **Action proposals** — tool, args, requires-approval
+- **Session budgets** — max thoughts, branches, revisions, content chars, reason-summary chars
+- **TTL-based retention** — sessions expire (default 1 hour), no disk persistence
+- **Secret redaction** — API keys, tokens, passwords, JWTs redacted before storage and logging
+- **Metadata-only logging** — raw thought content is never logged
+- **Export formats** — JSON, JSONL, Markdown
+- **Legacy compatibility mode** — accepts the original Sequential Thinking input shape
+- **No external calls** — the server does not execute tools, fetch URLs, or call APIs
+
+## Privacy
+
+This server stores structured reasoning traces. Traces may contain sensitive task, user, or project information. By default, traces are in-memory only, expire after 1 hour, and raw thought content is not logged. Secret redaction is enabled by default. See [Security model](#security-model).
 
 ## Installation
+
+### From source
 
 ```bash
 cargo install --path .
 ```
 
-Or build from source:
+### Release build
 
 ```bash
 cargo build --release
+# binary at target/release/mcp-sequential-thinking
 ```
 
-## MCP Client Configuration
+## MCP client configuration
 
 ### Basic
 
@@ -53,7 +90,7 @@ cargo build --release
 }
 ```
 
-### With Context7 (development)
+### With Context7 (recommended during development)
 
 ```json
 {
@@ -72,22 +109,20 @@ cargo build --release
 }
 ```
 
-## Context7 development recommendation
-
-When developing this project with an AI coding agent, use Context7 MCP to fetch current crate documentation, especially for rmcp, before generating code.
+When developing this project with an AI coding agent, use the Context7 MCP to fetch current crate documentation (especially `rmcp`) before generating code.
 
 ## Tools
 
 | Tool | Description |
 |---|---|
 | `sequentialthinking` | Record one structured thought in a reasoning session |
-| `sequential_thinking` | Alias for sequentialthinking |
+| `sequential_thinking` | Alias for `sequentialthinking` |
 | `get_thinking_session` | Return one session by ID |
 | `list_thinking_sessions` | List active sessions |
 | `clear_thinking_session` | Remove one session (idempotent) |
 | `export_thinking_session` | Export a session in JSON, JSONL, or Markdown |
 
-## Schema examples
+## Schema
 
 ### sequentialthinking input
 
@@ -215,12 +250,12 @@ mcp-sequential-thinking --log-level debug
 
 ## Security model
 
-- **Memory only**: Traces are stored in-memory, not persisted to disk
-- **TTL**: Sessions expire and are cleaned up after the configured TTL (default 1 hour)
-- **Redaction**: Secrets (API keys, tokens, passwords, JWTs) are redacted before storage and logging
-- **Metadata-only logging**: Raw thought content is never logged
-- **No external calls**: The server does not execute tools, fetch URLs, or call external APIs
-- **No file access**: Export returns content to the client only; no files are written
+- **Memory only** — traces are stored in-memory, not persisted to disk
+- **TTL** — sessions expire and are cleaned up after the configured TTL (default 1 hour)
+- **Redaction** — secrets (API keys, tokens, passwords, JWTs) are redacted before storage and logging
+- **Metadata-only logging** — raw thought content is never logged
+- **No external calls** — the server does not execute tools, fetch URLs, or call external APIs
+- **No file access** — export returns content to the client only; no files are written
 
 ## Non-goals
 
@@ -231,11 +266,61 @@ mcp-sequential-thinking --log-level debug
 - Replacing model reasoning
 - Guaranteeing correctness
 
-## Test instructions
+## Development
+
+### Prerequisites
+
+- Rust 1.74 or later (stable)
+- `cargo`, `rustfmt`, `clippy` (installed via `rustup component add rustfmt clippy`)
+- `pre-commit` (optional, for local hooks) — `pip install pre-commit`
+
+### Build and test
 
 ```bash
-cargo test                    # Run all tests (62 tests, 10 categories)
-cargo clippy -- -D warnings   # Lint
-cargo fmt -- --check           # Format check
-cargo build --release          # Release build
+cargo build                   # debug build
+cargo build --release         # release build
+cargo test                    # run all 88 tests across 14 modules
+cargo fmt -- --check          # formatting check
+cargo clippy --all-targets -- -D warnings   # lint (deny warnings)
 ```
+
+### Pre-commit hooks
+
+This repo ships a [pre-commit.com](https://pre-commit.com) config that runs `cargo fmt --check` and `cargo clippy -- -D warnings` on every commit. One-time setup:
+
+```bash
+pip install pre-commit
+pre-commit install
+```
+
+After that, every commit automatically runs the lint chain. CI runs the same checks via `.github/workflows/ci.yml`.
+
+### Project layout
+
+```
+src/
+  main.rs              # binary entry point
+  lib.rs               # library exports
+  server.rs            # MCP server setup
+  config.rs            # config + CLI parsing
+  error.rs             # error types
+  export/              # JSON / JSONL / Markdown exporters
+  model/               # ThoughtKind, ThoughtRecord, session, branch, risk, evidence, action
+  redaction/           # secret redaction
+  store/               # in-memory ThinkingStore
+  tools/               # MCP tool handlers
+  validation/          # input rules and warnings
+tests/                 # 14 integration test modules
+```
+
+## Contributing
+
+1. Fork the repository and create a feature branch.
+2. Run `cargo fmt`, `cargo clippy --all-targets -- -D warnings`, and `cargo test` locally — all must pass.
+3. Open a pull request with a clear description of the change and its motivation.
+
+Issues and PRs welcome.
+
+## License
+
+[MIT](LICENSE) — Copyright (c) 2026 mcp-sequential-thinking contributors.
