@@ -40,7 +40,8 @@ pub async fn run_server(config: AppConfig) -> anyhow::Result<()> {
 
     tracing::info!("Server configured, starting stdio transport");
 
-    rmcp::serve_server(service, (tokio::io::stdin(), tokio::io::stdout())).await?;
+    let running = rmcp::serve_server(service, (tokio::io::stdin(), tokio::io::stdout())).await?;
+    running.waiting().await?;
 
     Ok(())
 }
@@ -58,7 +59,10 @@ impl SequentialThinkingService {
 
 impl ServerHandler for SequentialThinkingService {
     fn get_info(&self) -> rmcp::model::InitializeResult {
-        rmcp::model::InitializeResult::new(Default::default())
+        let capabilities = rmcp::model::ServerCapabilities::builder()
+            .enable_tools()
+            .build();
+        rmcp::model::InitializeResult::new(capabilities)
             .with_server_info(rmcp::model::Implementation::new(
                 "mcp-sequential-thinking",
                 env!("CARGO_PKG_VERSION"),
