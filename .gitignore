@@ -1,8 +1,22 @@
+# Build artifacts
 /target
 **/*.rs.bk
-.env
+
+# Editor & OS noise
 *.swp
 *.swo
+*.swn
 .idea/
 .vscode/
 .DS_Store
+*.orig
+*.rej
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Local project tooling (not for distribution)
+.agent/
+docs/
