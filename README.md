@@ -2,7 +2,6 @@
 
 > A structured reasoning trace MCP server for AI agents. Records typed thinking steps with branching, revision tracking, dependency chains, evidence references, risk classification, and action proposals.
 
-[![CI](https://github.com/mcp-sequential-thinking/mcp-sequential-thinking/actions/workflows/ci.yml/badge.svg)](https://github.com/mcp-sequential-thinking/mcp-sequential-thinking/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Rust](https://img.shields.io/badge/rust-1.74%2B-orange.svg)](https://www.rust-lang.org)
 [![MCP](https://img.shields.io/badge/MCP-2025--06--18-blueviolet)](https://modelcontextprotocol.io)
